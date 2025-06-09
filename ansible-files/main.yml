@@ -1,0 +1,6 @@
+---
+- import_playbook: playbooks/00-common-setup.yml
+- import_playbook: playbooks/01-k8s-master.yml
+- import_playbook: playbooks/02-k8s-worker.yml
+- import_playbook: playbooks/03-docker-registry.yml
+

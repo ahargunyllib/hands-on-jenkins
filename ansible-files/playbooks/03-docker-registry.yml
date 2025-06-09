@@ -1,0 +1,17 @@
+---
+- name: Deploy Docker Registry
+  hosts: masters
+  become: true
+  vars_files:
+    - ../vars/ec2_instances.yml
+
+  tasks:
+    - name: Create directory for registry data
+      file:
+        path: /mnt/registry-data
+        state: directory
+        mode: '0777'
+
+    - name: Deploy Docker Registry
+      become: false
+      command: kubectl apply -f /home/ubuntu/hands-on-jenkins/k8s/docker-registry.yaml

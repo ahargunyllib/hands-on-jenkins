@@ -1,0 +1,85 @@
+---
+- name: Initialize Kubernetes Master Node
+  hosts: masters
+  become: true
+  vars_files:
+    - ../vars/ec2_instances.yml
+
+  tasks:
+    - name: Pull required Kubernetes images
+      command: kubeadm config images pull --cri-socket=/var/run/cri-dockerd.sock
+
+    - name: Initialize Kubernetes cluster
+      command: >
+        kubeadm init --pod-network-cidr=10.244.0.0/16
+        --cri-socket=/var/run/cri-dockerd.sock
+        --apiserver-advertise-address={{ master_private_ip }}
+        --apiserver-cert-extra-sans={{ master_ip }}
+      register: kubeadm_init
+      failed_when: kubeadm_init.rc != 0 and "already exists" not in kubeadm_init.stderr
+      changed_when: kubeadm_init.rc == 0
+
+    - name: Create directory for kube config
+      file:
+        path: /home/ubuntu/.kube
+        state: directory
+        owner: ubuntu
+        group: ubuntu
+        mode: '0755'
+
+    - name: Copy admin.conf to user's kube config
+      copy:
+        src: /etc/kubernetes/admin.conf
+        dest: /home/ubuntu/.kube/config
+        remote_src: yes
+        owner: ubuntu
+        group: ubuntu
+        mode: '0644'
+
+    - name: Install Flannel network
+      become: false
+      command: kubectl apply -f https://github.com/flannel-io/flannel/releases/latest/download/kube-flannel.yml
+
+    - name: Generate join command for worker nodes
+      command: kubeadm token create --print-join-command
+      register: join_command
+
+    - name: Store join command
+      set_fact:
+        join_command: "{{ join_command.stdout }}"
+
+    - name: Copy join command to local file
+      local_action: copy content="{{ join_command }} --cri-socket=/var/run/cri-dockerd.sock" dest="/tmp/k8s_join_command" mode="0644"
+      become: false
+
+    - name: Create cluster role for dashboard
+      become: false
+      shell: kubectl create clusterrolebinding dashboard-admin --clusterrole=cluster-admin --serviceaccount=kube-system:kubernetes-dashboard || true
+
+    - name: Create namespaces
+      become: false
+      shell: kubectl create namespace {{ item }} || true
+      with_items:
+        - monitoring
+        - devops-tools
+
+    - name: Configure kubelet to accept insecure registry
+      lineinfile:
+        path: /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
+        line: "Environment=\"KUBELET_EXTRA_ARGS=--feature-gates=AllAlpha=false\""
+        insertafter: '\[Service\]'
+        state: present
+        create: yes
+
+    - name: Restart kubelet
+      systemd:
+        name: kubelet
+        daemon_reload: yes
+        state: restarted
+
+    - name: Clone repository
+      git:
+        repo: https://github.com/ahargunyllib/hands-on-jenkins.git
+        dest: /home/ubuntu/hands-on-jenkins
+        version: HEAD
+        force: yes

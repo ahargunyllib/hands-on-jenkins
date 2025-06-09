@@ -17,9 +17,11 @@ spec:
     spec:
       containers:
       - name: carvilla-web
-        image: 10.34.7.115:30500/carvilla:21
+        image: ${REGISTRY_URL}/${IMAGE_NAME}:${BUILD_NUMBER}
+        imagePullPolicy: Always
         ports:
         - containerPort: 80
+          name: http
         resources:
           limits:
             cpu: "0.5"
@@ -27,3 +29,9 @@ spec:
           requests:
             cpu: "0.2"
             memory: "128Mi"
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 5
+          periodSeconds: 10
