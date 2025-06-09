@@ -98,6 +98,9 @@ Edit `jenkins-pipeline.groovy` to modify:
 ## 1. Jenkins Installation
 
 Run the following commands on the `master node` to set up Jenkins
+```bash
+ssh -i ~/.ssh/carvilla-key.pem ubuntu@[master-ip]
+```
 
 ### Step 1: Create a Namespace for DevOps Tools
 
