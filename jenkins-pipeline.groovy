@@ -26,11 +26,10 @@ spec:
     }
 
     environment {
-        // TODO: Replace these with actual values or use Jenkins credentials
-        REGISTRY_URL = "${DOCKER_REGISTRY_HOST}" // Will be replaced by the EC2 instance IP and port
+        REGISTRY_URL = "{{ master_ip }}:30500" // Use public IP
         IMAGE_NAME = "carvilla"
         APP_PORT = "40000"
-        K8S_MASTER = "${K8S_API_ENDPOINT}" // Will be replaced by the EC2 instance IP
+        K8S_MASTER = "{{ master_ip }}" // Use public IP
         REPO_URL= "https://github.com/ahargunyllib/hands-on-jenkins.git"
         REPO_FOLDER = "hands-on-jenkins"
     }
