@@ -1,0 +1,38 @@
+- name: Verify Kubernetes Cluster
+  hosts: masters
+  become: false
+
+  tasks:
+    - name: Wait for all nodes to be ready
+      shell: |
+        for i in {1..30}; do
+          if kubectl get nodes | grep -E 'Ready' | grep -v 'NotReady' | wc -l | grep -q '2'; then
+            echo "All nodes are ready"
+            exit 0
+          fi
+          echo "Waiting for nodes to be ready... attempt $i/30"
+          sleep 20
+        done
+        echo "Timeout waiting for nodes"
+        exit 1
+      register: nodes_ready
+
+    - name: Display node status
+      shell: kubectl get nodes -o wide
+      register: node_status
+
+    - name: Show node status
+      debug:
+        var: node_status.stdout_lines
+
+    - name: Check system pods
+      shell: kubectl get pods -n kube-system
+      register: system_pods
+
+    - name: Show system pods
+      debug:
+        var: system_pods.stdout_lines
+
+    - name: Label worker node
+      shell: kubectl label node {{ hostvars['worker']['ansible_host'] }} node-role.kubernetes.io/worker=worker --overwrite
+      ignore_errors: true

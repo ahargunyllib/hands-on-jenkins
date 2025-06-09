@@ -80,3 +80,30 @@
         dest: /home/ubuntu/hands-on-jenkins
         version: HEAD
         force: yes
+
+    - name: Wait for all master components to be ready
+      become: false
+      shell: |
+        until kubectl get nodes | grep -E 'Ready.*control-plane'; do
+          echo "Waiting for master to be ready..."
+          sleep 10
+        done
+        echo "Master node is ready"
+
+    - name: Wait for Flannel pods to be ready
+      become: false
+      shell: |
+        until kubectl get pods -n kube-flannel | grep -E 'Running.*1/1'; do
+          echo "Waiting for Flannel to be ready..."
+          sleep 10
+        done
+        echo "Flannel is ready"
+
+    - name: Wait for CoreDNS to be ready
+      become: false
+      shell: |
+        until kubectl get pods -n kube-system -l k8s-app=kube-dns | grep -E 'Running.*1/1'; do
+          echo "Waiting for CoreDNS to be ready..."
+          sleep 10
+        done
+        echo "CoreDNS is ready"

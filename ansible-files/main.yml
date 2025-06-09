@@ -3,4 +3,4 @@
 - import_playbook: playbooks/01-k8s-master.yml
 - import_playbook: playbooks/02-k8s-worker.yml
 - import_playbook: playbooks/03-docker-registry.yml
-
+- import_playbook: playbooks/04-verify-cluster.yml
