@@ -69,7 +69,10 @@
         dest: /etc/docker/daemon.json
         content: |
           {
-            "insecure-registries": ["{{ hostvars['master']['ansible_host'] }}:30500"]
+            "insecure-registries": [
+              "{{ hostvars['master']['ansible_host'] }}:30500",
+              "{{ master_private_ip }}:30500"
+            ]
           }
 
     - name: Restart Docker after configuring insecure registries
