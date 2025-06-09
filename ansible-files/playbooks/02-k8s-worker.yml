@@ -15,14 +15,6 @@
       register: join_worker
       failed_when: join_worker.rc != 0 and "already exists" not in join_worker.stderr
 
-    - name: Configure kubelet to accept insecure registry
-      lineinfile:
-        path: /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
-        line: "Environment=\"KUBELET_EXTRA_ARGS=--feature-gates=AllAlpha=false\""
-        insertafter: '\[Service\]'
-        state: present
-        create: yes
-
     - name: Restart kubelet
       systemd:
         name: kubelet
