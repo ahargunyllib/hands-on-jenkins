@@ -93,7 +93,7 @@
     - name: Wait for Flannel pods to be ready
       become: false
       shell: |
-        until kubectl get pods -n kube-flannel | grep -E 'Running.*1/1'; do
+        until kubectl get pods -n kube-flannel | grep -E '1/1.*Running'; do
           echo "Waiting for Flannel to be ready..."
           sleep 10
         done
@@ -102,7 +102,7 @@
     - name: Wait for CoreDNS to be ready
       become: false
       shell: |
-        until kubectl get pods -n kube-system -l k8s-app=kube-dns | grep -E 'Running.*1/1'; do
+        until kubectl get pods -n kube-system -l k8s-app=kube-dns | grep -E '1/1.*Running'; do
           echo "Waiting for CoreDNS to be ready..."
           sleep 10
         done

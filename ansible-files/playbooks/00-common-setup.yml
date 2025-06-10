@@ -3,6 +3,8 @@
   hosts: all
   become: true
   gather_facts: true
+  vars_files:
+    - ../vars/ec2_instances.yml
 
   tasks:
     - name: Update apt cache
