@@ -32,7 +32,7 @@ This setup includes:
 ```bash
 export AWS_ACCESS_KEY_ID="your-access-key"
 export AWS_SECRET_ACCESS_KEY="your-secret-key"
-export AWS_REGION="us-east-1"  # Change to your preferred region
+export AWS_SESSION_TOKEN="your-session-token"  # Optional, if using temporary credentials
 ```
 
 Verify your AWS CLI configuration:
@@ -281,7 +281,7 @@ Since Prometheus is already installed, you can set up basic monitoring for the a
 **On the master node ({MASTER_IP}):**
 
 ```bash
-kubectl apply -f k8s/service-monitor.yaml
+kubectl apply -f ~/hands-on-jenkins/k8s/service-monitor.yaml
 ```
 
 ## 5. Troubleshooting
@@ -351,7 +351,7 @@ ls -la /var/run/docker.sock
 chmod 666 /var/run/docker.sock  # If needed
 ```
 
-## 7. Pipeline Explanation
+## 6. Pipeline Explanation
 
 1. **Checkout Stage**: Retrieves the code from the Git repository
 2. **Test Stage**: Runs the test script to ensure all required files are present
@@ -359,7 +359,7 @@ chmod 666 /var/run/docker.sock  # If needed
 4. **Deploy Stage**: Applies Kubernetes manifests to create/update the deployment and service
 5. **Verify Stage**: Confirms the application is running correctly and accessible
 
-## 8. Scaling the Application
+## 7. Scaling the Application
 
 If you need to handle more traffic, you can scale the application:
 
@@ -369,7 +369,7 @@ If you need to handle more traffic, you can scale the application:
 kubectl scale deployment carvilla-web --replicas=4
 ```
 
-## 9. Conclusion
+## 8. Conclusion
 
 This CI/CD pipeline provides a complete workflow for deploying the CarVilla web application to your Kubernetes cluster. By following this module, you can:
 
@@ -379,7 +379,9 @@ This CI/CD pipeline provides a complete workflow for deploying the CarVilla web 
 4. Make it accessible to users via a consistent URL
 5. Monitor it using Prometheus
 
-## Cleanup
+## 9. Additional Resources
+
+### Cleanup
 
 To destroy all resources when you're done:
 
@@ -392,6 +394,6 @@ rm -rf terraform/
 rm -rf ansible/
 ```
 
-## Cost Consideration
+### Cost Consideration
 
 This deployment uses t3.medium instances which are charged by the hour. Make sure to clean up resources when they're not needed to avoid unnecessary expenses.
