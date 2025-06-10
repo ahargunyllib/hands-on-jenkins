@@ -170,7 +170,7 @@ kubectl exec -it $JENKINS_POD -n devops-tools -- cat /var/jenkins_home/secrets/i
 
 ### Step 9: Install Required Plugins
 1. Go to "Manage Jenkins" > "Manage Plugins" > "Available" tab
-2. Search for and select the following plugins:
+2. Search for and select the following plugins
 - Kubernetes
 - Docker Pipeline
 - Pipeline: Kubernetes

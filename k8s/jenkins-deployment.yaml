@@ -16,9 +16,14 @@ spec:
       serviceAccountName: jenkins
       securityContext:
         fsGroup: 1000
+        runAsUser: 1000
+        runAsGroup: 1000
       containers:
       - name: jenkins
         image: jenkins/jenkins:lts
+        securityContext:
+          runAsUser: 1000
+          runAsGroup: 1000
         ports:
         - containerPort: 8080
           name: httpport

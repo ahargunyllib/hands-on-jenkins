@@ -31,7 +31,6 @@ spec:
         APP_PORT = "40000"
         K8S_MASTER = "{{ master_ip }}" // Use public IP
         REPO_URL= "https://github.com/ahargunyllib/hands-on-jenkins.git"
-        REPO_FOLDER = "hands-on-jenkins"
     }
 
     stages {
@@ -84,7 +83,6 @@ spec:
                     rm -rf *
                     git clone ${REPO_URL} .
                     ls -la
-                    cd ${REPO_FOLDER}
                     '''
                 }
             }
@@ -96,7 +94,9 @@ spec:
                     sh '''
                     echo "Running application tests..."
                     chmod +x apps/web/tests/test.sh
-                    ./apps/web/tests/test.sh
+                    cd apps/web
+                    ./tests/test.sh
+                    cd ../..
                     '''
                 }
             }
@@ -107,7 +107,7 @@ spec:
                 container('ubuntu') {
                     sh '''
                     echo "Building Docker image..."
-                    docker build --network=host -t ${REGISTRY_URL}/${IMAGE_NAME}:${BUILD_NUMBER} apps/web/Dockerfile
+                    docker build --network=host -t ${REGISTRY_URL}/${IMAGE_NAME}:${BUILD_NUMBER} apps/web/
                     echo "Tagging Docker image as latest..."
                     docker tag ${REGISTRY_URL}/${IMAGE_NAME}:${BUILD_NUMBER} ${REGISTRY_URL}/${IMAGE_NAME}:latest
 
